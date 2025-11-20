@@ -1,19 +1,3 @@
-
-# 設定頁面標題
-st.set_page_config(page_title="全球金融戰情室", layout="wide")
-
-# === 加入這段 CSS 代碼來隱藏右上角選單與 footer ===
-hide_menu_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
-    """
-st.markdown(hide_menu_style, unsafe_allow_html=True)
-# =================================================
-
-
 import streamlit as st
 import yfinance as yf
 import mplfinance as mpf
@@ -22,8 +6,23 @@ import numpy as np
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 
-# 設定頁面標題
+# ==========================================
+#  1. 必須先設定頁面 (這行一定要在最前面)
+# ==========================================
 st.set_page_config(page_title="全球金融戰情室", layout="wide")
+
+# ==========================================
+#  2. 隱藏右上角選單與 Footer (隱形斗篷)
+# ==========================================
+hide_menu_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+    """
+st.markdown(hide_menu_style, unsafe_allow_html=True)
+
 st.title("💹 全球金融戰情室 (ATR 水平支撐壓力版)")
 
 # ==========================================
@@ -48,8 +47,8 @@ with st.sidebar:
 
     # --- 熱門代碼字典 ---
     popular_tickers = {
-        "自訂輸入 (Manual Input)": "CUSTOM",
-        "黃金期貨 (Gold)": "GC=F",      # <--- 已改為直接使用期貨代碼
+        "自訂輸入 (Manual Input)": "CUSTOM", 
+        "黃金期貨 (Gold)": "GC=F",
         "比特幣 (BTC)": "BTC-USD",
         "以太幣 (ETH)": "ETH-USD",
         "台積電 (2330)": "2330.TW",
@@ -87,7 +86,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.subheader("多檔比較")
-    comp_a = st.text_input("比較 A", value=stock_code)
+    comp_a = st.text_input("比較 A", value=stock_code) 
     comp_b = st.text_input("比較 B", value="^TWII")
 
 # ==========================================
@@ -142,23 +141,24 @@ with tab1:
                 raw_df = yf.download(ticker, start=start_date, progress=False)
                 
                 # 處理 MultiIndex
-                if isinstance(raw_df.columns, pd.MultiIndex):
+                if isinstance(raw_df.columns, pd.MultiIndex): 
                     raw_df.columns = raw_df.columns.get_level_values(0)
                 
-                # 檢查是否為空 (針對美元指數保留救援機制)
+                # 檢查是否為空
                 if raw_df.empty:
+                    # 救援：若是美元指數失敗，切換期貨
                     if ticker == 'DX-Y.NYB':
                         st.warning(f"⚠️ Yahoo 美元指數 (DX-Y.NYB) 暫時無法讀取，已自動切換至「美元指數期貨 (DX=F)」以供分析。")
                         ticker = 'DX=F'
                         raw_df = yf.download(ticker, start=start_date, progress=False)
                     
                     # 再次處理 MultiIndex
-                    if isinstance(raw_df.columns, pd.MultiIndex):
+                    if isinstance(raw_df.columns, pd.MultiIndex): 
                         raw_df.columns = raw_df.columns.get_level_values(0)
                 
                 # 轉型與清理
                 for c in ['Open','High','Low','Close','Volume']:
-                    if c in raw_df.columns:
+                    if c in raw_df.columns: 
                         raw_df[c] = pd.to_numeric(raw_df[c], errors='coerce')
                 
                 raw_df.dropna(inplace=True)
