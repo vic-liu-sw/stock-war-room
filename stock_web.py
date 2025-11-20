@@ -1,3 +1,19 @@
+
+# 設定頁面標題
+st.set_page_config(page_title="全球金融戰情室", layout="wide")
+
+# === 加入這段 CSS 代碼來隱藏右上角選單與 footer ===
+hide_menu_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+    """
+st.markdown(hide_menu_style, unsafe_allow_html=True)
+# =================================================
+
+
 import streamlit as st
 import yfinance as yf
 import mplfinance as mpf
